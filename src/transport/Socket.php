@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace smpp\transport;
 
 use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 use smpp\exceptions\SmppException;
 use smpp\exceptions\SocketTransportException;
 use smpp\HostCollection;
-use smpp\LoggerDecorator;
-use smpp\LoggerInterface;
 use Socket as SocketClass;
 
 /**
@@ -60,9 +59,9 @@ class Socket
     /** @var int define MSG_DONTWAIT as class const to prevent bug https://bugs.php.net/bug.php?id=48326 */
     private const MSG_DONTWAIT = 64;
     /**
-     * @var LoggerDecorator
+     * @var LoggerInterface
      */
-    private LoggerDecorator $logger;
+    private LoggerInterface $logger;
 
     /**
      * Construct a new socket for this transport to use.
@@ -70,18 +69,16 @@ class Socket
      * @param string[] $hosts list of hosts to try.
      * @param string[]|int|string $ports list of ports to try, or a single common port
      * @param boolean $persist use persistent sockets
-     * @param LoggerInterface ...$loggers
+     * @param LoggerInterface $logger
      */
     public function __construct(
         array $hosts,
         array|int|string $ports,
         protected bool $persist = false,
-        LoggerInterface ...$loggers
+        LoggerInterface $logger = null
     )
     {
-        // todo: find better solution to provide debug flag into loggers
-        LoggerDecorator::$debug = self::$defaultDebug;
-        $this->logger = new LoggerDecorator(...$loggers);
+        $this->logger = $logger;
 
         // Deal with optional port
         $this->hostCollection = new HostCollection();

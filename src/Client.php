@@ -126,22 +126,22 @@ class Client
     /** @var int */
     protected int $sarMessageReferenceNumber;
 
-    /** @var LoggerDecorator */
-    public LoggerDecorator $logger;
+    /** @var \Psr\Log\LoggerInterface */
+    public \Psr\Log\LoggerInterface|null $logger;
 
     /**
      * Construct the SMPP class
      *
      * @param Socket $transport
-     * @param LoggerInterface ...$loggers
+     * @param \Psr\Log\LoggerInterface $logger
      */
     public function __construct(
         public Socket $transport,
-        LoggerInterface ...$loggers
+        \Psr\Log\LoggerInterface $logger = null
     )
     {
         LoggerDecorator::$debug = Socket::$defaultDebug;
-        $this->logger = new LoggerDecorator(...$loggers);
+        $this->logger = $logger;
     }
 
     /**
@@ -444,8 +444,8 @@ class Client
         array $tags = null,
         int $dataCoding = Smpp::DATA_CODING_DEFAULT,
         int $priority = 0x00,
-        $scheduleDeliveryTime = null,
-        $validityPeriod = null
+                $scheduleDeliveryTime = null,
+                $validityPeriod = null
     ): bool|string
     {
         $messageLength = strlen($message);
