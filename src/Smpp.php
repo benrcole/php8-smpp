@@ -223,4 +223,33 @@ class Smpp
             default                     => 'Unknown status code: ' . dechex($statusCode)
         };
     }
+
+    public static function getCommandName($commandId): string
+    {
+        return match($commandId){
+            self::GENERIC_NACK          => "generic_nack ",
+            self::BIND_RECEIVER         => "bind_receiver",
+            self::BIND_RECEIVER_RESP    => "bind_receiver_resp",
+            self::BIND_TRANSMITTER      => "bind_transmitter",
+            self::BIND_TRANSMITTER_RESP => "bind_transmitter_resp",
+            self::QUERY_SM              => "query_sm",
+            self::QUERY_SM_RESP         => "query_sm_resp",
+            self::SUBMIT_SM             => "submit_sm",
+            self::SUBMIT_SM_RESP        => "submit_sm_resp",
+            self::DELIVER_SM            => "deliver_sm",
+            self::DELIVER_SM_RESP       => "deliver_sm_resp",
+            self::UNBIND                => "unbind",
+            self::UNBIND_RESP           => "unbind_resp",
+            self::REPLACE_SM            => "replace_sm",
+            self::REPLACE_SM_RESP       => "replace_sm_resp",
+            self::CANCEL_SM             => "cancel_sm",
+            self::CANCEL_SM_RESP        => "cancel_sm_resp",
+            self::BIND_TRANSCEIVER      => "bind_transciever_resp",
+            self::BIND_TRANSCEIVER_RESP => "bind_transciever_resp",
+            self::OUTBIND               => "outbind",
+            self::ENQUIRE_LINK          => "enquire_link",
+            self::ENQUIRE_LINK_RESP     => "enquire_link_resp",
+            default                     => 'Unknown status code: ' . dechex($statusCode)
+        };
+    }
 }
