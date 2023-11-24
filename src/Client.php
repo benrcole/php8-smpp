@@ -129,6 +129,10 @@ class Client
     /** @var \Psr\Log\LoggerInterface */
     public \Psr\Log\LoggerInterface|null $logger;
 
+    private array $msgStatus=[];
+
+    private array $pduStatus=[];
+
     /**
      * Construct the SMPP class
      *
@@ -634,6 +638,7 @@ class Client
         if (!$body) {
             throw new SmppException('unable to unpack response body:' . $response->body);
         }
+        $this->msgStatus[$body['msgId']]=$response->status;
         return $body['msgid'];
     }
 
@@ -958,7 +963,7 @@ class Client
         if ($this->sequenceNumber >= 0x7FFFFFFF) {
             $this->reconnect();
         }
-
+        $this->pduStatus[$response->id]=$response->status;
         return $response;
     }
 
@@ -972,10 +977,14 @@ class Client
         $length = strlen($pdu->body) + 16;
         $header = pack("NNNN", $length, $pdu->id, $pdu->status, $pdu->sequence);
 
-        $this->logger->info("Read PDU         : $length bytes");
+        $this->logger->info("________SEND  PDU_________");
+        $this->logger->info("\/ \/ \/ \/ \/ \/ \/ \/ \/ \/");
+        $this->logger->info("Send PDU         : $length bytes");
         $this->logger->info(' ' . chunk_split(bin2hex($header . $pdu->body), 2, " "));
-        $this->logger->info(' command_id      : 0x' . dechex($pdu->id));
+        $this->logger->info(' command_id      : 0x' . dechex($pdu->id). " " . Smpp::getCommandName($pdu->id));
         $this->logger->info(' sequence number : ' . $pdu->sequence);
+        $this->logger->info("/\ /\ /\ /\ /\ /\ /\ /\ /\ /\ ");
+        $this->logger->info("_______________________________");
 
         $this->transport->write($header . $pdu->body, $length);
     }
@@ -1083,12 +1092,18 @@ class Client
             $body = null;
         }
 
+        $this->logger->info("________READ  PDU_________");
+        $this->logger->info("\/ \/ \/ \/ \/ \/ \/ \/ \/ \/");
         $this->logger->info("Read PDU         : $length bytes");
         $this->logger->info(' ' . chunk_split(bin2hex($bufLength . $bufHeaders . $body), 2, " "));
         $this->logger->info(" command id      : 0x" . dechex($command_id));
         $this->logger->info(" command status  : 0x" . dechex($command_status) . " " . Smpp::getStatusMessage($command_status));
         $this->logger->info(' sequence number : ' . $sequence_number);
+        $this->pduStatus[$command_id]['status']$command_status;
+        $this->pduStatus[$command_id]['desc'] = Smpp::getStatusMessage($command_status);
 
+        $this->logger->info("/\ /\ /\ /\ /\ /\ /\ /\ /\ /\ ");
+        $this->logger->info("_______________________________");
         return new Pdu($command_id, $command_status, $sequence_number, $body);
     }
 
