@@ -1099,7 +1099,7 @@ class Client
         $this->logger->info(" command id      : 0x" . dechex($command_id));
         $this->logger->info(" command status  : 0x" . dechex($command_status) . " " . Smpp::getStatusMessage($command_status));
         $this->logger->info(' sequence number : ' . $sequence_number);
-        $this->pduStatus[$command_id]['status']$=command_status;
+        $this->pduStatus[$command_id]['status']=$command_status;
         $this->pduStatus[$command_id]['desc'] = Smpp::getStatusMessage($command_status);
 
         $this->logger->info("/\ /\ /\ /\ /\ /\ /\ /\ /\ /\ ");
