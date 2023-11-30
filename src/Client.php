@@ -129,9 +129,9 @@ class Client
     /** @var \Psr\Log\LoggerInterface */
     public \Psr\Log\LoggerInterface|null $logger;
 
-    private array $msgStatus=[];
+    protected array $msgStatus=[];
 
-    private array $pduStatus=[];
+    protected array $pduStatus=[];
 
     /**
      * Construct the SMPP class
